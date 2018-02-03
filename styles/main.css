@@ -1,0 +1,8 @@
+#container {
+  border: 1px solid;
+  height: 40vw;
+  /* left: calc(50% - 40vw); */
+  margin: auto;
+  position: relative;
+  width: 40vw;
+}
