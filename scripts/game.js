@@ -1,3 +1,13 @@
+/**
+ * @class
+ * @property [number] size - Length of the grid
+ * @property [HTMLElement] container - Div container
+ * @property [HTMLElement] canvas - Canvas
+ * @property [object] context - Canvas 2d context
+ * @property [array] matrix - Grid of cells at current time
+ * @property [array] backup - Grid of cells one step before
+ * @property [function] loop - Updating and rendering cycle
+ */
 class Game {
   constructor(container, size) {
     this.size = size || 50;
@@ -26,6 +36,12 @@ class Game {
     requestAnimationFrame(this.loop);
   }
 
+  /**
+   * Gets the state of the adyacent cells
+   * @method
+   * @param [object] cell - Reference cell
+   * @return [object] - DEAD and ALIVE number of cells
+   */
   getNeighbors(cell) {
     let neighbors = { true: 0, false: 0 };
     let x = cell.position.x;
@@ -57,6 +73,10 @@ class Game {
     return neighbors;
   }
 
+  /**
+   * Draws each cell of the grid
+   * @method
+   */
   render() {
     this.matrix.map(row => {
       row.map(cell => {
@@ -65,6 +85,11 @@ class Game {
     });
   }
 
+  /**
+   * Create the canvas element
+   * @method
+   * @return [HTMLElement] - Canvas
+   */
   setCanvas() {
     let canvas = document.createElement('canvas');
     canvas.width = this.container.clientWidth;
@@ -72,6 +97,11 @@ class Game {
     return canvas;
   }
 
+  /**
+   * Creates a random grid of cells
+   * @method
+   * @return [array] - Grid
+   */
   setMatrix() {
     let cellSize = this.canvas.width / this.size;
     let matrix = [];
@@ -87,10 +117,18 @@ class Game {
     return matrix;
   }
 
+  /**
+   * Applies the rules and updates each cell
+   * A live cell with more than 3 live neighbors dies
+   * A live cell with less than 2 live neighbors dies
+   * A dead cell with more than 3 live neighbors lives
+   * @method
+   */
   update() {
     this.backup.map((row, x) => {
       row.map((cell, y) => {
         let neighbors = this.getNeighbors(cell);
+        // TODO: Check rules
         if (cell.state === ALIVE && (neighbors[ALIVE] > 3 || neighbors[ALIVE] < 2)) {
           this.matrix[x][y].state = DEAD;
         } else if (cell.state === DEAD && neighbors[ALIVE] >= 3) {
