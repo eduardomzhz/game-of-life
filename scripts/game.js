@@ -48,6 +48,7 @@ class Game {
    * @method
    */
   bindEvents() {
+    this.canvas.addEventListener('click', this.toggleCellState.bind(this));
     this.clearButton.addEventListener('click', this.clearMatrix.bind(this));
     this.randomButton.addEventListener('click', this.randomizeMatrix.bind(this));
     this.startButton.addEventListener('click', this.toggleGameState.bind(this));
@@ -154,13 +155,25 @@ class Game {
     for (let i = 0; i < this.size; i++) {
       let row = [];
       for (let j = 0; j < this.size; j++) {
-        let state = Math.random() > 0.90;
         let position = { x: j, y: i };
-        row.push(new Cell(state, position, cellSize));
+        row.push(new Cell(DEAD, position, cellSize));
       }
       matrix.push(row);
     }
     return matrix;
+  }
+
+  /**
+   * Gets the state of the adyacent cells
+   * @method
+   * @param [object] cell - Reference cell
+   * @return [object] - DEAD and ALIVE number of cells
+   */
+  toggleCellState(ev) {
+    let cellSize = this.canvas.width / this.size;
+    let x = Math.floor(ev.layerX / cellSize);
+    let y = Math.floor(ev.layerY / cellSize);
+    this.matrix[y][x].state = !this.matrix[y][x].state;
   }
 
   /**
