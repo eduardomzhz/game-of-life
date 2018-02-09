@@ -6,3 +6,10 @@
   position: relative;
   width: 40vw;
 }
+#controllers {
+  margin: auto;
+  padding: 10px 0;
+  position: relative;
+  text-align: center;
+  width: 40vw;
+}

@@ -10,13 +10,18 @@
  */
 class Game {
   constructor(container, size) {
+    this.isActive = false;
     this.size = size || 50;
     this.container = container;
     this.canvas = this.setCanvas();
     this.context = this.canvas.getContext('2d');
     this.container.appendChild(this.canvas);
+    this.clearButton = document.getElementById('clear');
+    this.randomButton = document.getElementById('random');
+    this.startButton = document.getElementById('start');
     this.matrix = this.setMatrix();
     this.backup = this.matrix.slice();
+    this.bindEvents();
 
     let step = 1 / 2;
     let lastTime = 0;
@@ -26,7 +31,9 @@ class Game {
       deltaTime += (currentTime - lastTime) / 1000;
       lastTime = currentTime;
       while (deltaTime > step) {
-        this.update();
+        if (this.isActive) {
+          this.update();
+        }
         deltaTime -= step;
       }
       this.render();
@@ -34,6 +41,31 @@ class Game {
     };
 
     requestAnimationFrame(this.loop);
+  }
+
+  /**
+   * Binds controllers events
+   * @method
+   */
+  bindEvents() {
+    this.clearButton.addEventListener('click', this.clearMatrix.bind(this));
+    this.randomButton.addEventListener('click', this.randomizeMatrix.bind(this));
+    this.startButton.addEventListener('click', this.toggleGameState.bind(this));
+  }
+
+  /**
+   * Sets the matrix cells to DEAD state
+   * @method
+   * @param [object] cell - Reference cell
+   * @return [object] - DEAD and ALIVE number of cells
+   */
+  clearMatrix() {
+    this.matrix.map(row => {
+      row.map(cell => {
+        cell.state = DEAD;
+      });
+    });
+    this.backup = this.matrix.slice();
   }
 
   /**
@@ -71,6 +103,20 @@ class Game {
       }
     }
     return neighbors;
+  }
+
+  /**
+   * Sets the matrix cells to random state
+   * @method
+   */
+  randomizeMatrix() {
+    this.matrix.map(row => {
+      row.map(cell => {
+        let state = Math.random() > 0.90;
+        cell.state = state;
+      });
+    });
+    this.backup = this.matrix.slice();
   }
 
   /**
@@ -115,6 +161,15 @@ class Game {
       matrix.push(row);
     }
     return matrix;
+  }
+
+  /**
+   * Toggles game isActive property
+   * @method
+   */
+  toggleGameState() {
+    this.isActive = !this.isActive;
+    this.startButton.textContent = this.isActive ? 'PAUSE' : 'RESUME';
   }
 
   /**
