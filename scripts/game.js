@@ -5,13 +5,12 @@
  * @property [HTMLElement] canvas - Canvas
  * @property [object] context - Canvas 2d context
  * @property [array] matrix - Grid of cells at current time
- * @property [array] backup - Grid of cells one step before
  * @property [function] loop - Updating and rendering cycle
  */
 class Game {
   constructor(container, size) {
     this.isActive = false;
-    this.size = size || 50;
+    this.size = size || 40;
     this.container = container;
     this.canvas = this.setCanvas();
     this.context = this.canvas.getContext('2d');
@@ -20,7 +19,6 @@ class Game {
     this.randomButton = document.getElementById('random');
     this.startButton = document.getElementById('start');
     this.matrix = this.setMatrix();
-    this.backup = this.matrix.slice();
     this.bindEvents();
 
     let step = 1 / 2;
@@ -66,7 +64,6 @@ class Game {
         cell.state = DEAD;
       });
     });
-    this.backup = this.matrix.slice();
   }
 
   /**
@@ -80,27 +77,27 @@ class Game {
     let x = cell.position.x;
     let y = cell.position.y;
     if (x >= 0 && x < this.size - 1) {
-      neighbors[this.backup[y][x+1].state] ++;
+      neighbors[this.matrix[y][x+1].state] ++;
       if (y > 0) {
-        neighbors[this.backup[y-1][x+1].state] ++;
+        neighbors[this.matrix[y-1][x+1].state] ++;
       }
     }
     if (x > 0 && x < this.size) {
-      neighbors[this.backup[y][x - 1].state] ++;
+      neighbors[this.matrix[y][x - 1].state] ++;
       if (y < this.size - 1) {
-        neighbors[this.backup[y+1][x-1].state] ++;
+        neighbors[this.matrix[y+1][x-1].state] ++;
       }
     }
     if (y >= 0 && y < this.size - 1) {
-      neighbors[this.backup[y + 1][x].state] ++;
+      neighbors[this.matrix[y + 1][x].state] ++;
       if (x < this.size - 1 && y < this.size - 1) {
-        neighbors[this.backup[y+1][x+1].state] ++;
+        neighbors[this.matrix[y+1][x+1].state] ++;
       }
     }
     if (y > 0 && y < this.size) {
-      neighbors[this.backup[y - 1][x].state] ++;
+      neighbors[this.matrix[y - 1][x].state] ++;
       if (x > 0 && y > 0) {
-        neighbors[this.backup[y-1][x-1].state] ++;
+        neighbors[this.matrix[y-1][x-1].state] ++;
       }
     }
     return neighbors;
@@ -117,7 +114,6 @@ class Game {
         cell.state = state;
       });
     });
-    this.backup = this.matrix.slice();
   }
 
   /**
@@ -152,10 +148,10 @@ class Game {
   setMatrix() {
     let cellSize = this.canvas.width / this.size;
     let matrix = [];
-    for (let i = 0; i < this.size; i++) {
+    for (let y = 0; y < this.size; y++) {
       let row = [];
-      for (let j = 0; j < this.size; j++) {
-        let position = { x: j, y: i };
+      for (let x = 0; x < this.size; x++) {
+        let position = { x: x, y: y };
         row.push(new Cell(DEAD, position, cellSize));
       }
       matrix.push(row);
@@ -189,21 +185,23 @@ class Game {
    * Applies the rules and updates each cell
    * A live cell with more than 3 live neighbors dies
    * A live cell with less than 2 live neighbors dies
-   * A dead cell with more than 3 live neighbors lives
+   * A dead cell with exactly 3 live neighbors lives
    * @method
    */
   update() {
-    this.backup.map((row, x) => {
-      row.map((cell, y) => {
+    let newMatrix = this.setMatrix();
+    this.matrix.map((row, y) => {
+      row.map((cell, x) => {
+        let newState = cell.state;
         let neighbors = this.getNeighbors(cell);
-        // TODO: Check rules
         if (cell.state === ALIVE && (neighbors[ALIVE] > 3 || neighbors[ALIVE] < 2)) {
-          this.matrix[x][y].state = DEAD;
-        } else if (cell.state === DEAD && neighbors[ALIVE] >= 3) {
-          this.matrix[x][y].state = ALIVE;
+          newState = DEAD;
+        } else if (cell.state === DEAD && neighbors[ALIVE] === 3) {
+          newState = ALIVE;
         }
+        newMatrix[y][x].state = newState;
       });
     });
-    this.backup = this.matrix.slice();
+    this.matrix = newMatrix.slice();
   }
 }
