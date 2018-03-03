@@ -4,6 +4,7 @@
  * @property [HTMLElement] container - Div container
  * @property [HTMLElement] canvas - Canvas
  * @property [object] context - Canvas 2d context
+ * @property [number] speed - Step speed
  * @property [array] matrix - Grid of cells at current time
  * @property [function] loop - Updating and rendering cycle
  */
@@ -18,21 +19,22 @@ class Game {
     this.clearButton = document.getElementById('clear');
     this.randomButton = document.getElementById('random');
     this.startButton = document.getElementById('start');
+    this.speedInput = document.getElementById('speed');
+    this.speed = this.speedInput.value;
     this.matrix = this.setMatrix();
     this.bindEvents();
 
-    let step = 1 / 2;
     let lastTime = 0;
     let deltaTime = 0;
 
     this.loop = (currentTime = 0) => {
       deltaTime += (currentTime - lastTime) / 1000;
       lastTime = currentTime;
-      while (deltaTime > step) {
+      while (deltaTime > this.speed) {
         if (this.isActive) {
           this.update();
         }
-        deltaTime -= step;
+        deltaTime -= this.speed;
       }
       this.render();
       requestAnimationFrame(this.loop);
@@ -50,6 +52,7 @@ class Game {
     this.clearButton.addEventListener('click', this.clearMatrix.bind(this));
     this.randomButton.addEventListener('click', this.randomizeMatrix.bind(this));
     this.startButton.addEventListener('click', this.toggleGameState.bind(this));
+    this.speedInput.addEventListener('change', this.setSpeed.bind(this));
   }
 
   /**
@@ -157,6 +160,14 @@ class Game {
       matrix.push(row);
     }
     return matrix;
+  }
+
+  /**
+   * Changes the step speed
+   * @method
+   */
+  setSpeed() {
+    this.speed = this.speedInput.value || 0.5;
   }
 
   /**
