@@ -1,15 +1,23 @@
-#container {
-  border: 1px solid;
-  height: 40vw;
-  /* left: calc(50% - 40vw); */
-  margin: auto;
-  position: relative;
-  width: 40vw;
+#app {
+  display: grid;
+  font-family: Helvetica, Arial, sans-serif;
+  height: 90vh;
+  grid-auto-columns: minmax(500px, auto);
+  grid-gap: 40px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 60px;
+  width: 95%;
 }
 #controllers {
-  margin: auto;
-  padding: 10px 0;
-  position: relative;
+  padding: 0 10%;
   text-align: center;
-  width: 40vw;
+}
+#controllers > div {
+  padding: 10px;
+}
+#controllers input[type="range"],
+#controllers label {
+  display: block;
+  margin: 0 auto;
+  width: 80%;
 }

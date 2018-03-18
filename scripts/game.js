@@ -177,9 +177,10 @@ class Game {
    * @return [object] - DEAD and ALIVE number of cells
    */
   toggleCellState(ev) {
+    let rect = this.canvas.getBoundingClientRect();
     let cellSize = this.canvas.width / this.size;
-    let x = Math.floor(ev.layerX / cellSize);
-    let y = Math.floor(ev.layerY / cellSize);
+    let x = Math.floor((ev.clientX - rect.left) / cellSize);
+    let y = Math.floor((ev.clientY - rect.top) / cellSize);
     this.matrix[y][x].state = !this.matrix[y][x].state;
   }
 
