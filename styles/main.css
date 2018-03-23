@@ -12,12 +12,24 @@
   padding: 0 10%;
   text-align: center;
 }
-#controllers > div {
-  padding: 10px;
-}
 #controllers input[type="range"],
 #controllers label {
   display: block;
   margin: 0 auto;
   width: 80%;
+}
+#controllers > div {
+  font-size: 14px;
+  padding: 10px;
+  position: relative;
+}
+#controllers > div > span:first-of-type {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+}
+#controllers > div > span:last-of-type {
+  position: absolute;
+  right: 10px;
+  top: 50%;
 }
