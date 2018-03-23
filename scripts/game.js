@@ -11,7 +11,6 @@
 class Game {
   constructor(container, size) {
     this.isActive = false;
-    this.size = size || 40;
     this.container = container;
     this.canvas = this.setCanvas();
     this.context = this.canvas.getContext('2d');
@@ -20,6 +19,8 @@ class Game {
     this.randomButton = document.getElementById('random');
     this.startButton = document.getElementById('start');
     this.speedInput = document.getElementById('speed');
+    this.sizeInput = document.getElementById('size');
+    this.size = size || this.sizeInput.value;
     this.speed = this.speedInput.value;
     this.matrix = this.setMatrix();
     this.bindEvents();
@@ -53,6 +54,7 @@ class Game {
     this.randomButton.addEventListener('click', this.randomizeMatrix.bind(this));
     this.startButton.addEventListener('click', this.toggleGameState.bind(this));
     this.speedInput.addEventListener('change', this.setSpeed.bind(this));
+    this.sizeInput.addEventListener('change', this.rebuild.bind(this));
   }
 
   /**
@@ -117,6 +119,15 @@ class Game {
         cell.state = state;
       });
     });
+  }
+
+  /**
+   * Restart the instance matrix
+   * @method
+   */
+  rebuild() {
+    this.size = this.sizeInput.value;
+    this.matrix = this.setMatrix();
   }
 
   /**
