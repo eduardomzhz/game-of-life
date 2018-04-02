@@ -1,27 +1,22 @@
 /**
  * @class
- * @property [number] size - Length of the grid
- * @property [HTMLElement] container - Div container
- * @property [HTMLElement] canvas - Canvas
  * @property [object] context - Canvas 2d context
- * @property [number] speed - Step speed
+ * @property [object] dom - Object with HTML elements as controllers
+ * @property [boolean] isActive - State of the game
  * @property [array] matrix - Grid of cells at current time
+ * @property [number] size - Length of the grid
+ * @property [number] speed - Step speed
  * @property [function] loop - Updating and rendering cycle
  */
 class Game {
-  constructor(container, size) {
+  constructor(dom) {
     this.isActive = false;
-    this.container = container;
-    this.canvas = this.setCanvas();
-    this.context = this.canvas.getContext('2d');
-    this.container.appendChild(this.canvas);
-    this.clearButton = document.getElementById('clear');
-    this.randomButton = document.getElementById('random');
-    this.startButton = document.getElementById('start');
-    this.speedInput = document.getElementById('speed');
-    this.sizeInput = document.getElementById('size');
-    this.size = size || this.sizeInput.value;
-    this.speed = this.speedInput.value;
+    this.dom = dom || {};
+    this.dom.canvas = this.setCanvas();
+    this.dom.container.appendChild(this.dom.canvas);
+    this.context = this.dom.canvas.getContext('2d');
+    this.size = this.dom.size.value;
+    this.speed = this.dom.speed.value;
     this.matrix = this.setMatrix();
     this.bindEvents();
 
@@ -49,12 +44,12 @@ class Game {
    * @method
    */
   bindEvents() {
-    this.canvas.addEventListener('click', this.toggleCellState.bind(this));
-    this.clearButton.addEventListener('click', this.clearMatrix.bind(this));
-    this.randomButton.addEventListener('click', this.randomizeMatrix.bind(this));
-    this.startButton.addEventListener('click', this.toggleGameState.bind(this));
-    this.speedInput.addEventListener('change', this.setSpeed.bind(this));
-    this.sizeInput.addEventListener('change', this.rebuild.bind(this));
+    this.dom.canvas.addEventListener('click', this.toggleCellState.bind(this));
+    this.dom.clear.addEventListener('click', this.clearMatrix.bind(this));
+    this.dom.random.addEventListener('click', this.randomizeMatrix.bind(this));
+    this.dom.start.addEventListener('click', this.toggleGameState.bind(this));
+    this.dom.speed.addEventListener('change', this.setSpeed.bind(this));
+    this.dom.size.addEventListener('change', this.rebuild.bind(this));
   }
 
   /**
@@ -126,7 +121,7 @@ class Game {
    * @method
    */
   rebuild() {
-    this.size = this.sizeInput.value;
+    this.size = this.dom.size.value;
     this.matrix = this.setMatrix();
   }
 
@@ -149,8 +144,8 @@ class Game {
    */
   setCanvas() {
     let canvas = document.createElement('canvas');
-    canvas.width = this.container.clientWidth;
-    canvas.height = this.container.clientHeight;
+    canvas.width = this.dom.container.clientWidth;
+    canvas.height = this.dom.container.clientHeight;
     return canvas;
   }
 
@@ -160,7 +155,7 @@ class Game {
    * @return [array] - Grid
    */
   setMatrix() {
-    let cellSize = this.canvas.width / this.size;
+    let cellSize = this.dom.canvas.width / this.size;
     let matrix = [];
     for (let y = 0; y < this.size; y++) {
       let row = [];
@@ -178,7 +173,7 @@ class Game {
    * @method
    */
   setSpeed() {
-    this.speed = this.speedInput.value || 0.5;
+    this.speed = this.dom.speed.value || 0.5;
   }
 
   /**
@@ -188,8 +183,8 @@ class Game {
    * @return [object] - DEAD and ALIVE number of cells
    */
   toggleCellState(ev) {
-    let rect = this.canvas.getBoundingClientRect();
-    let cellSize = this.canvas.width / this.size;
+    let rect = this.dom.canvas.getBoundingClientRect();
+    let cellSize = this.dom.canvas.width / this.size;
     let x = Math.floor((ev.clientX - rect.left) / cellSize);
     let y = Math.floor((ev.clientY - rect.top) / cellSize);
     this.matrix[y][x].state = !this.matrix[y][x].state;
@@ -201,7 +196,7 @@ class Game {
    */
   toggleGameState() {
     this.isActive = !this.isActive;
-    this.startButton.textContent = this.isActive ? 'PAUSE' : 'RESUME';
+    this.dom.start.textContent = this.isActive ? 'PAUSE' : 'RESUME';
   }
 
   /**
