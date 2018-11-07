@@ -104,6 +104,15 @@ class Game {
   }
 
   /**
+   * Stops the execution
+   * @method
+   */
+  pause() {
+    this.isActive = false;
+    this.dom.start.textContent = 'RESUME';
+  }
+
+  /**
    * Sets the matrix cells to random state
    * @method
    */
@@ -121,6 +130,7 @@ class Game {
    * @method
    */
   rebuild() {
+    this.pause();
     this.size = this.dom.size.value;
     this.matrix = this.setMatrix();
   }
@@ -191,12 +201,24 @@ class Game {
   }
 
   /**
-   * Toggles game isActive property
+   * Toggles game state
    * @method
    */
   toggleGameState() {
-    this.isActive = !this.isActive;
-    this.dom.start.textContent = this.isActive ? 'PAUSE' : 'RESUME';
+    if (this.isActive) {
+      this.pause();
+    } else {
+      this.unpause();
+    }
+  }
+
+  /**
+   * Continues with the execution
+   * @method
+   */
+  unpause() {
+    this.isActive = true;
+    this.dom.start.textContent = 'PAUSE';
   }
 
   /**
